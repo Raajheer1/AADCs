@@ -4,11 +4,12 @@ import (
 	"bufio"
 	"encoding/xml"
 	"fmt"
-	"strconv"
-
-	//"github.com/umahmood/haversine"
+	"github.com/umahmood/haversine"
 	"io/ioutil"
+	"log"
+	"math"
 	"os"
+	"strconv"
 	"strings"
 )
 
@@ -34,13 +35,8 @@ type Airway struct {
 var fixes map[string]Location = parseFIX("Waypoints.xml")
 var airways map[string][]string = parseAWY("AWY.txt")
 
-/*
-Callsign: ASA2118
-Route: KSFO +SSTIK4 NTELL Q174 FLCHR COKTL1 KLAS
-Distance: 13544.87
-*/
-//
 func main() {
+	output := ""
 	//Test Case - 1
 	//Route:
 	route1 := "KSFO +SSTIK4 NTELL Q174 FLCHR COKTL1 KLAS"
@@ -48,11 +44,11 @@ func main() {
 	route1expected := "KSFO SSTIK NTELL CABAB TTMSN SKANN FLCHR COKTL KLAS"
 
 	route1expecteddist := 393.9
-	route1dist := route1expecteddist
+	route1dist := Routedist(Routeparse(route1))
 
 	route1output := strings.Join(Routeparse(route1), " ")
 
-	verify(1, route1expected, route1output, route1expecteddist, route1dist)
+	output += verify(1, route1expected, route1output, route1expecteddist, route1dist)
 
 	//Test Case - 2
 	//Route:
@@ -61,11 +57,11 @@ func main() {
 	route2expected := "KSEA SEA NORMY BLUIT MWH KU87M IDA MJANE KDEN"
 
 	route2expecteddist := 902.8
-	route2dist := route2expecteddist
+	route2dist := Routedist(Routeparse(route2))
 
 	route2output := strings.Join(Routeparse(route2), " ")
 
-	verify(2, route2expected, route2output, route2expecteddist, route2dist)
+	output += verify(2, route2expected, route2output, route2expecteddist, route2dist)
 
 	//Test Case - 3
 	//Route:
@@ -74,11 +70,11 @@ func main() {
 	route3expected := "KDFW SWABR HULZE TXO MIERA ABQ ZUN PYRIT DRK GABBL HLYWD KLAX"
 
 	route3expecteddist := 1090.3
-	route3dist := route3expecteddist
+	route3dist := Routedist(Routeparse(route3))
 
 	route3output := strings.Join(Routeparse(route3), " ")
 
-	verify(3, route3expected, route3output, route3expecteddist, route3dist)
+	output += verify(3, route3expected, route3output, route3expecteddist, route3dist)
 
 	//Test Case - 4
 	//Route:
@@ -87,43 +83,59 @@ func main() {
 	route4expected := "KSFO TRUKN MOGEE MACUS MCORD LCU BEARR KURSE ONL FOD VIGGR DBQ COTON OBK KUBBS PMM ALPHE DUNKS SVM CFGFT BEWEL JHW HOXIE DMACK STENT MAGIO LVZ LENDY KJFK"
 
 	route4expecteddist := 2271.7
-	route4dist := route4expecteddist
+	route4dist := Routedist(Routeparse(route4))
 
 	route4output := strings.Join(Routeparse(route4), " ")
 
-	verify(4, route4expected, route4output, route4expecteddist, route4dist)
+	output += verify(4, route4expected, route4output, route4expecteddist, route4dist)
 
 	//Test Case - 5
 	//Route:
 	route5 := "KDEN COORZ6 VOAXA Q136 OAL MOD9 KSFO"
 	//Expected Parsed Route
-	route5expected := "KDEN FOAMS IPALE MOLSN BULLT COORZ VOAXA ELLF WEEMN MANRD TRALP GDGET CRLES KATTS RUMPS OAL ... KSFO"
+	route5expected := "KDEN COORZ VOAXA ELLFF WEEMN MANRD TRALP GDGET CRLES KATTS RUMPS OAL KSFO"
 	// TODO -- ^^ CHECK COORZ6 and MOD9 CHARTS
 
-	route5expecteddist := 0.0
-	route5dist := route5expecteddist
+	route5expecteddist := 843.1
+	route5dist := Routedist(Routeparse(route5))
 
 	route5output := strings.Join(Routeparse(route5), " ")
 
-	verify(5, route5expected, route5output, route5expecteddist, route5dist)
+	output += verify(5, route5expected, route5output, route5expecteddist, route5dist)
+
+	f, err := os.Create("output.txt")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	defer f.Close()
+
+	_, err = f.WriteString(output)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println("Done!")
 }
 
 //Verifies the test cases
-func verify(routeID int, expectedroute string, route string, expecteddist float64, dist float64) {
+func verify(routeID int, expectedroute string, route string, expecteddist float64, dist float64) string {
+	output := ""
 	if expectedroute == route {
-		fmt.Println("Route " + strconv.Itoa(routeID) + " -- Parsed Correctly")
+		output += "Route " + strconv.Itoa(routeID) + " -- Parsed Correctly\n"
 	} else {
-		fmt.Println("\nRoute " + strconv.Itoa(routeID) + " -- ERROR")
-		fmt.Println("\tExpected: " + expectedroute)
-		fmt.Println("\tOutput: " + route)
+		output += "Route " + strconv.Itoa(routeID) + " -- ERROR\n"
+		output += "\tExpected: " + expectedroute + "\n"
+		output += "\tOutput: " + route + "\n"
 	}
-	if expecteddist == dist {
-		fmt.Println("Route " + strconv.Itoa(routeID) + " -- Distance Calculated Correctly")
+	if math.Abs(expecteddist-dist) < expecteddist*.01 {
+		output += "Route " + strconv.Itoa(routeID) + " -- Distance Calculated Correctly\n\n"
 	} else {
-		fmt.Println("Route " + strconv.Itoa(routeID) + " -- ERROR")
-		fmt.Printf("\tExpected: %f", expecteddist)
-		fmt.Printf("\tOutput: %f", dist)
+		output += "Route " + strconv.Itoa(routeID) + " -- ERROR\n"
+		output += fmt.Sprintf("\tExpected: %f", expecteddist)
+		output += fmt.Sprintf("\tOutput: %f\n\n", dist)
 	}
+	return output
 }
 
 //Parses the latest AIRAC FIXES
@@ -228,7 +240,7 @@ func Routeparse(route string) []string {
 
 	for i, s := range endroute {
 		if fixes[s].Lon == 0 {
-			removeIndex(endroute, i)
+			endroute = removeIndex(endroute, i)
 		}
 	}
 
@@ -237,13 +249,13 @@ func Routeparse(route string) []string {
 
 func Routedist(route []string) float64 {
 	dist := 0.0
-	//for i := 0; i < len(route)-1; i++ {
-	//	point1 := haversine.Coord{Lat: fixes[route[i]].Lat, Lon: fixes[route[i]].Lon}
-	//	point2 := haversine.Coord{Lat: fixes[route[i+1]].Lat, Lon: fixes[route[i+1]].Lon}
-	//	mi, _ := haversine.Distance(point1, point2)
-	//	mi /= 1.151
-	//	dist += mi
-	//}
+	for i := 0; i < len(route)-1; i++ {
+		point1 := haversine.Coord{Lat: fixes[route[i]].Lat, Lon: fixes[route[i]].Lon}
+		point2 := haversine.Coord{Lat: fixes[route[i+1]].Lat, Lon: fixes[route[i+1]].Lon}
+		mi, _ := haversine.Distance(point1, point2)
+		mi /= 1.151
+		dist += mi
+	}
 
 	return dist
 }

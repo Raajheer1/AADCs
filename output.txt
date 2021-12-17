@@ -1,0 +1,21 @@
+Route 1 -- Parsed Correctly
+Route 1 -- Distance Calculated Correctly
+
+Route 2 -- Parsed Correctly
+Route 2 -- Distance Calculated Correctly
+
+Route 3 -- Parsed Correctly
+Route 3 -- Distance Calculated Correctly
+
+Route 4 -- Parsed Correctly
+Route 4 -- Distance Calculated Correctly
+
+Route 5 -- Parsed Correctly
+Route 5 -- Distance Calculated Correctly
+
+Route 6 -- ERROR
+	Expected: KDEN COORZ VOAXA ELLFF WEEMN MANRD TRALP GDGET CRLES KATTS RUMPS OAL KSFO
+	Output: CYYZ MIXUT GNTRY SVM DUNKS BEJAE PMM KG75K KP72G OBH BRWRY LAWGR KDEN
+Route 6 -- ERROR
+	Expected: 1170.400000	Output: 11036.744921
+

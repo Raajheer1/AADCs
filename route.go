@@ -103,6 +103,20 @@ func main() {
 
 	output += verify(5, route5expected, route5output, route5expecteddist, route5dist)
 
+	//Test Case - 5
+	//Route:
+	route6 := "CYYZ N0472F400 MIXUT6 GNTRY DCT SVM J70 DUNKS DCT BEJAE DCT PMM DCT KG75K DCT KP72G DCT OBH BRWRY LAWGR3 KDEN"
+	//Expected Parsed Route
+	route6expected := "KDEN COORZ VOAXA ELLFF WEEMN MANRD TRALP GDGET CRLES KATTS RUMPS OAL KSFO"
+	// TODO -- ^^ CHECK COORZ6 and MOD9 CHARTS
+
+	route6expecteddist := 1170.4
+	route6dist := Routedist(Routeparse(route6))
+
+	route6output := strings.Join(Routeparse(route6), " ")
+
+	output += verify(6, route6expected, route6output, route6expecteddist, route6dist)
+
 	f, err := os.Create("output.txt")
 	if err != nil {
 		log.Fatal(err)

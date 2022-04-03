@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"github.com/umahmood/haversine"
 	"io/ioutil"
-	"log"
 	"math"
 	"os"
 	"strconv"
@@ -35,102 +34,102 @@ type Airway struct {
 var fixes map[string]Location = parseFIX("Waypoints.xml")
 var airways map[string][]string = parseAWY("AWY.txt")
 
-func main() {
-	output := ""
-	//Test Case - 1
-	//Route:
-	route1 := "KSFO +SSTIK4 NTELL Q174 FLCHR COKTL1 KLAS"
-	//Expected Parsed Route:
-	route1expected := "KSFO SSTIK NTELL CABAB TTMSN SKANN FLCHR COKTL KLAS"
-
-	route1expecteddist := 393.9
-	route1dist := Routedist(Routeparse(route1))
-
-	route1output := strings.Join(Routeparse(route1), " ")
-
-	output += verify(1, route1expected, route1output, route1expecteddist, route1dist)
-
-	//Test Case - 2
-	//Route:
-	route2 := "KSEA SEA7 SEA DCT NORMY J90 MWH/N0451F350 DCT KU87M DCT IDA DCT MJANE DCT KDEN"
-	//Expected Parsed Route:
-	route2expected := "KSEA SEA NORMY BLUIT MWH KU87M IDA MJANE KDEN"
-
-	route2expecteddist := 902.8
-	route2dist := Routedist(Routeparse(route2))
-
-	route2output := strings.Join(Routeparse(route2), " ")
-
-	output += verify(2, route2expected, route2output, route2expecteddist, route2dist)
-
-	//Test Case - 3
-	//Route:
-	route3 := "KDFW SWABR8 HULZE TXO J72 ABQ J78 DRK GABBL HLYWD1 KLAX"
-	//Expected Parsed Route:
-	route3expected := "KDFW SWABR HULZE TXO MIERA ABQ ZUN PYRIT DRK GABBL HLYWD KLAX"
-
-	route3expecteddist := 1090.3
-	route3dist := Routedist(Routeparse(route3))
-
-	route3output := strings.Join(Routeparse(route3), " ")
-
-	output += verify(3, route3expected, route3output, route3expecteddist, route3dist)
-
-	//Test Case - 4
-	//Route:
-	route4 := "KSFO TRUKN2 MOGEE Q122 KURSE/N0457F350 Q122 FOD J94 PMM J70 LVZ LENDY6 KJFK"
-	//Expected Parsed Route:
-	route4expected := "KSFO TRUKN MOGEE MACUS MCORD LCU BEARR KURSE ONL FOD VIGGR DBQ COTON OBK KUBBS PMM ALPHE DUNKS SVM CFGFT BEWEL JHW HOXIE DMACK STENT MAGIO LVZ LENDY KJFK"
-
-	route4expecteddist := 2271.7
-	route4dist := Routedist(Routeparse(route4))
-
-	route4output := strings.Join(Routeparse(route4), " ")
-
-	output += verify(4, route4expected, route4output, route4expecteddist, route4dist)
-
-	//Test Case - 5
-	//Route:
-	route5 := "KDEN COORZ6 VOAXA Q136 OAL MOD9 KSFO"
-	//Expected Parsed Route
-	route5expected := "KDEN COORZ VOAXA ELLFF WEEMN MANRD TRALP GDGET CRLES KATTS RUMPS OAL KSFO"
-	// TODO -- ^^ CHECK COORZ6 and MOD9 CHARTS
-
-	route5expecteddist := 843.1
-	route5dist := Routedist(Routeparse(route5))
-
-	route5output := strings.Join(Routeparse(route5), " ")
-
-	output += verify(5, route5expected, route5output, route5expecteddist, route5dist)
-
-	//Test Case - 5
-	//Route:
-	route6 := "CYYZ N0472F400 MIXUT6 GNTRY DCT SVM J70 DUNKS DCT BEJAE DCT PMM DCT KG75K DCT KP72G DCT OBH BRWRY LAWGR3 KDEN"
-	//Expected Parsed Route
-	route6expected := "KDEN COORZ VOAXA ELLFF WEEMN MANRD TRALP GDGET CRLES KATTS RUMPS OAL KSFO"
-	// TODO -- ^^ CHECK COORZ6 and MOD9 CHARTS
-
-	route6expecteddist := 1170.4
-	route6dist := Routedist(Routeparse(route6))
-
-	route6output := strings.Join(Routeparse(route6), " ")
-
-	output += verify(6, route6expected, route6output, route6expecteddist, route6dist)
-
-	f, err := os.Create("output.txt")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	defer f.Close()
-
-	_, err = f.WriteString(output)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	fmt.Println("Done!")
-}
+//func main() {
+//	output := ""
+//	//Test Case - 1
+//	//Route:
+//	route1 := "KSFO +SSTIK4 NTELL Q174 FLCHR COKTL1 KLAS"
+//	//Expected Parsed Route:
+//	route1expected := "KSFO SSTIK NTELL CABAB TTMSN SKANN FLCHR COKTL KLAS"
+//
+//	route1expecteddist := 393.9
+//	route1dist := Routedist(Routeparse(route1))
+//
+//	route1output := strings.Join(Routeparse(route1), " ")
+//
+//	output += verify(1, route1expected, route1output, route1expecteddist, route1dist)
+//
+//	//Test Case - 2
+//	//Route:
+//	route2 := "KSEA SEA7 SEA DCT NORMY J90 MWH/N0451F350 DCT KU87M DCT IDA DCT MJANE DCT KDEN"
+//	//Expected Parsed Route:
+//	route2expected := "KSEA SEA NORMY BLUIT MWH KU87M IDA MJANE KDEN"
+//
+//	route2expecteddist := 902.8
+//	route2dist := Routedist(Routeparse(route2))
+//
+//	route2output := strings.Join(Routeparse(route2), " ")
+//
+//	output += verify(2, route2expected, route2output, route2expecteddist, route2dist)
+//
+//	//Test Case - 3
+//	//Route:
+//	route3 := "KDFW SWABR8 HULZE TXO J72 ABQ J78 DRK GABBL HLYWD1 KLAX"
+//	//Expected Parsed Route:
+//	route3expected := "KDFW SWABR HULZE TXO MIERA ABQ ZUN PYRIT DRK GABBL HLYWD KLAX"
+//
+//	route3expecteddist := 1090.3
+//	route3dist := Routedist(Routeparse(route3))
+//
+//	route3output := strings.Join(Routeparse(route3), " ")
+//
+//	output += verify(3, route3expected, route3output, route3expecteddist, route3dist)
+//
+//	//Test Case - 4
+//	//Route:
+//	route4 := "KSFO TRUKN2 MOGEE Q122 KURSE/N0457F350 Q122 FOD J94 PMM J70 LVZ LENDY6 KJFK"
+//	//Expected Parsed Route:
+//	route4expected := "KSFO TRUKN MOGEE MACUS MCORD LCU BEARR KURSE ONL FOD VIGGR DBQ COTON OBK KUBBS PMM ALPHE DUNKS SVM CFGFT BEWEL JHW HOXIE DMACK STENT MAGIO LVZ LENDY KJFK"
+//
+//	route4expecteddist := 2271.7
+//	route4dist := Routedist(Routeparse(route4))
+//
+//	route4output := strings.Join(Routeparse(route4), " ")
+//
+//	output += verify(4, route4expected, route4output, route4expecteddist, route4dist)
+//
+//	//Test Case - 5
+//	//Route:
+//	route5 := "KDEN COORZ6 VOAXA Q136 OAL MOD9 KSFO"
+//	//Expected Parsed Route
+//	route5expected := "KDEN COORZ VOAXA ELLFF WEEMN MANRD TRALP GDGET CRLES KATTS RUMPS OAL KSFO"
+//	// TODO -- ^^ CHECK COORZ6 and MOD9 CHARTS
+//
+//	route5expecteddist := 843.1
+//	route5dist := Routedist(Routeparse(route5))
+//
+//	route5output := strings.Join(Routeparse(route5), " ")
+//
+//	output += verify(5, route5expected, route5output, route5expecteddist, route5dist)
+//
+//	//Test Case - 5
+//	//Route:
+//	route6 := "CYYZ N0472F400 MIXUT6 GNTRY DCT SVM J70 DUNKS DCT BEJAE DCT PMM DCT KG75K DCT KP72G DCT OBH BRWRY LAWGR3 KDEN"
+//	//Expected Parsed Route
+//	route6expected := "KDEN COORZ VOAXA ELLFF WEEMN MANRD TRALP GDGET CRLES KATTS RUMPS OAL KSFO"
+//	// TODO -- ^^ CHECK COORZ6 and MOD9 CHARTS
+//
+//	route6expecteddist := 1170.4
+//	route6dist := Routedist(Routeparse(route6))
+//
+//	route6output := strings.Join(Routeparse(route6), " ")
+//
+//	output += verify(6, route6expected, route6output, route6expecteddist, route6dist)
+//
+//	f, err := os.Create("output.txt")
+//	if err != nil {
+//		log.Fatal(err)
+//	}
+//
+//	defer f.Close()
+//
+//	_, err = f.WriteString(output)
+//	if err != nil {
+//		log.Fatal(err)
+//	}
+//
+//	fmt.Println("Done!")
+//}
 
 //Verifies the test cases
 func verify(routeID int, expectedroute string, route string, expecteddist float64, dist float64) string {
